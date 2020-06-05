@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[78]:
+# In[58]:
 
 
 import numpy as np
@@ -10,13 +10,13 @@ from collections import Counter
 import matplotlib.pyplot as plt
 
 
-# In[79]:
+# In[59]:
 
 
 pd.options.display.max_colwidth = 500
 
 
-# In[80]:
+# In[60]:
 
 
 f = pd.read_csv('202005171549_corona_tweets.csv')
@@ -24,26 +24,26 @@ df = pd.DataFrame(data = f)
 df.head(3)
 
 
-# In[81]:
+# In[61]:
 
 
 f2 = pd.read_csv('202005171549_corona_tweets.csv', nrows=15)
 print(f2)
 
 
-# In[82]:
+# In[62]:
 
 
 #1- How many lines are there in the dataframe? How much space does it consume in your memory? 
 
 
-# In[83]:
+# In[63]:
 
 
 len(df)
 
 
-# In[84]:
+# In[64]:
 
 
 df.memory_usage()
@@ -51,39 +51,39 @@ df.memory_usage(index=True).sum() #Overall memory consumption
 df.info(memory_usage='deep')
 
 
-# In[85]:
+# In[65]:
 
 
 #2- What are the column names?
 
 
-# In[86]:
+# In[66]:
 
 
 for col in df.columns: 
     print(col) 
 
 
-# In[87]:
+# In[67]:
 
 
 #3- Identify the most tweeting 50 users.
 
 
-# In[88]:
+# In[68]:
 
 
 most_tweeting_users = df['screen_name'].value_counts() 
 print(most_tweeting_users.head(50))
 
 
-# In[89]:
+# In[69]:
 
 
 #4- Plot a histogram of the 50 most tweeting users.
 
 
-# In[90]:
+# In[70]:
 
 
 most_tweeting_users.head(50).hist(bins=50) 
@@ -93,85 +93,109 @@ plt.ylabel('Number of users')
 plt.show()
 
 
-# In[91]:
+# In[71]:
 
 
 #5- Identify duplicate tweets based on the 'text' field.
 
 
-# In[92]:
+# In[72]:
 
 
 duplicateRowsDF = df[df['text'].duplicated()]['text']
 print(duplicateRowsDF)
 
 
-# In[93]:
+# In[73]:
 
 
 # 6- Remove duplicate tweets based on the 'text' field. How many tweets do you have now?
 
 
-# In[94]:
+# In[74]:
 
 
 df.drop_duplicates(subset=['text'], inplace=False) 
 
 
-# In[95]:
+# In[75]:
 
 
 # 7- Replace all users names with the usrusr token. 
 #You need to write a regular expression that identify user names and use the replace methodto replace it with the 'usrusr' token.
 
 
-# In[96]:
+# In[76]:
 
 
-usernames = df['text'].str.findall(r'@([\w]+)')
-for item in usernames:
-    for element in item:
-        print(element)
+#usernames = df['text'].str.findall(r'@([\w]+)')
+#for item in usernames:
+#    for element in item:
+#        print(element)
         
-        
-df['text'] = df['text'].replace(to_replace='@([\w]+)', value='usrusr', regex=True)
+df['text'] = df['text'].str.replace('@([\w]+)','usrusr', regex=True)
 
 
-# In[97]:
+# In[77]:
+
+
+#TESTING
+usr =[]
+
+for item in df['text'].str.lower():
+        if 'usrusr' in item:
+            usr.append(item)
+print(url[:10])
+
+
+# In[78]:
 
 
 #8- Replace all URLs with 'urlurl' token in the 'text' column.
 
 
-# In[98]:
+# In[79]:
 
 
 #urls = df['text'].str.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
 #print(urls)
+#URLless_string = re.sub(r'\w+:\/{2}[\d\w-]+(\.[\d\w-]+)*(?:(?:\/[^\s/]*))*', '', thestring)
+#df['text'] = df['text'].str.re.sub(r'\w+:\/{2}[\d\w-]+(\.[\d\w-]+)*(?:(?:\/[^\s/]*))*', '', 'urlurl')
+df['text'] = df['text'].str.replace('https?://\S+','urlurl', regex=True)
 
-df['text'] = df['text'].replace(to_replace='http[^\]*', value='urlurl', regex=True)
+
+# In[80]:
 
 
-# In[ ]:
+# TESTING
+url =[]
+
+for item in df['text'].str.lower():
+        if 'urlurl' in item:
+            url.append(item)
+print(url[:10])
+
+
+# In[81]:
 
 
 #9- If a tweet starts with "RT @", it is a retweet. Remove all retweets from the dataframe.
 
 
-# In[99]:
+# In[82]:
 
 
 df2 = df[~df.text.str.startswith('RT @')]
 df = df2
 
 
-# In[ ]:
+# In[83]:
 
 
 # 10- If the field is_retweet contains the value True, this tweet is a retweet as well. Remove those as well.
 
 
-# In[101]:
+# In[84]:
 
 
 retweets = df['is_retweet'] == True
@@ -179,26 +203,26 @@ retweets = df['is_retweet'] == True
 df_without_retweets = df[~df.is_retweet == True]
 
 
-# In[ ]:
+# In[85]:
 
 
 # 11- Check how many duplicate tweets are there. Remove them. How many tweets do you have now?
 
 
-# In[100]:
+# In[86]:
 
 
 duplicateRowsDF = df.duplicated()
 df.drop_duplicates(subset=['is_retweet'], inplace=False) 
 
 
-# In[ ]:
+# In[87]:
 
 
 # 12- Plot a histogram of the text lengths. What is the length of the longest and the shortest tweets?
 
 
-# In[103]:
+# In[88]:
 
 
 length_of_tweets = df['text'].str.len()
@@ -209,26 +233,26 @@ plt.ylabel('Length of tweets')
 plt.show()
 
 
-# In[ ]:
+# In[89]:
 
 
 # 13- Calculate the average tweet length based on the 'text' field.
 
 
-# In[104]:
+# In[90]:
 
 
 length_of_tweets.mean()
 
 
-# In[ ]:
+# In[91]:
 
 
 #14- Extract all words from the 'text' field and put them in a new column. 
 #The findall method and a regular expression to recognize words will help you.
 
 
-# In[105]:
+# In[92]:
 
 
 words_of_tweets = df['text'].str.findall(r'\w+')
@@ -237,13 +261,13 @@ df['Words'] = words_of_tweets
 print(df['Words'])
 
 
-# In[ ]:
+# In[93]:
 
 
 #15- Identify the words that occur the most. The Counter object from collections will help you.
 
 
-# In[106]:
+# In[94]:
 
 
 # empty Counter
@@ -256,13 +280,13 @@ for tokenlist in df['text'].str.lower().str.findall(r'\w+'):
 print(word_counter.most_common())
 
 
-# In[ ]:
+# In[95]:
 
 
 # 16- How many of the words occur only once? List 100 of them. Provide tweets that contain these words.
 
 
-# In[107]:
+# In[96]:
 
 
 occur_once_keys = []
@@ -274,13 +298,13 @@ for item in occur_once_keys[:100]:
     print(item)
 
 
-# In[ ]:
+# In[97]:
 
 
 #17- Find the longest 100 words. List them.
 
 
-# In[108]:
+# In[98]:
 
 
 new_word_counter = {}
@@ -291,31 +315,28 @@ for key in keys[0:100]:
     print(key)
 
 
-# In[ ]:
+# In[99]:
 
 
 #18- Find tweets that are all in upper case, such as "THIS IS A TWEET ALL UPPER CASE." in their 'text' field. 
 
 
-# In[ ]:
+# In[100]:
 
 
 #df['text'].str.isupper()
-
-i = 0
-for i in df['text'][i]:
-    i +=1
-    if df['text'][i].str.isupper() == True:
-        print(df['text'][i])
+for i in df['text']:
+    if i.isupper() == True:
+        print(i)
 
 
-# In[ ]:
+# In[101]:
 
 
 #19- Identify the mostly occurring 50 hashtags.
 
 
-# In[109]:
+# In[102]:
 
 
 word_counter2 = Counter()
@@ -324,20 +345,20 @@ for tokenlist in df['text'].str.lower().str.findall(r"#(\w+)"):
 print(word_counter2.most_common()[:50])
 
 
-# In[ ]:
+# In[103]:
 
 
 #20- Export the final dataframe to csv and Excel files.
 
 
-# In[114]:
+# In[104]:
 
 
 df.to_csv(r'/Volumes/Archive/final\ assignment \finalassignment.csv', index = False)
 df.to_excel(r'/Volumes/Archive/final\ assignment \finalassignment.xlsx', index = False)
 
 
-# In[ ]:
+# In[105]:
 
 
 ### Find tweets about Trump (not including retweets). Print 100 of them.
@@ -357,13 +378,13 @@ for item in tweets_trump[:100]:
     
 
 
-# In[ ]:
+# In[107]:
 
 
 ### Find tweets about Turkey (not including retweets). Print 100 of them.
 
 
-# In[113]:
+# In[108]:
 
 
 tweets_turkey =[]
@@ -376,7 +397,7 @@ for item in tweets_turkey[:100]:
     print(item)
 
 
-# In[ ]:
+# In[109]:
 
 
 
